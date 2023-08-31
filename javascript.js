@@ -41,106 +41,113 @@ const questions = [
     }
   ];
 
-  
   const startButton = document.getElementById("start-btn");
-  const questionContainer = document.getElementById("question-container");
-  const questionElement = document.getElementById("question");
-  const choicesElement = document.getElementById("choices");
-  const nextButton = document.getElementById("next-btn");
-  const resultContainer = document.getElementById("result-container");
-  const timerElement = document.getElementById("timer");
-  
-  let currentQuestionIndex = 0;
-  let score = 0;
-  let timer;
-  
-  startButton.addEventListener("click", startQuiz);
-  nextButton.addEventListener("click", () => {
-    currentQuestionIndex++;
-    resetTimer();
-    showQuestion();
+const questionContainer = document.getElementById("question-container");
+const questionElement = document.getElementById("question");
+const choicesElement = document.getElementById("choices");
+const nextButton = document.getElementById("next-btn");
+const resultContainer = document.getElementById("result-container");
+const timerElement = document.getElementById("timer");
+const progressElement = document.getElementById("progress"); // Add the progress element here
+
+let currentQuestionIndex = 0;
+let score = 0;
+let timer;
+
+startButton.addEventListener("click", startQuiz);
+nextButton.addEventListener("click", () => {
+  currentQuestionIndex++;
+  resetTimer();
+  showQuestion();
+});
+
+function startQuiz() {
+  startButton.classList.add("hide");
+  questionContainer.classList.remove("hide");
+  showQuestion();
+  startTimer();
+}
+
+function showQuestion() {
+  if (currentQuestionIndex >= questions.length) {
+    showResults();
+    return;
+  }
+
+  const currentQuestion = questions[currentQuestionIndex];
+  questionElement.innerText = currentQuestion.question;
+  choicesElement.innerHTML = "";
+
+  currentQuestion.choices.forEach((choice, index) => {
+    const choiceElement = document.createElement("li");
+    choiceElement.innerText = choice;
+    choiceElement.addEventListener("click", () => {
+      checkAnswer(index);
+    });
+    choicesElement.appendChild(choiceElement);
   });
-  
-  function startQuiz() {
-    startButton.classList.add("hide");
-    questionContainer.classList.remove("hide");
-    showQuestion();
-    startTimer();
+
+  if (currentQuestionIndex === questions.length - 1) {
+    nextButton.innerText = "Finish";
   }
-  
-  function showQuestion() {
-    if (currentQuestionIndex >= questions.length) {
-      showResults();
-      return;
-    }
-  
-    const currentQuestion = questions[currentQuestionIndex];
-    questionElement.innerText = currentQuestion.question;
-    choicesElement.innerHTML = "";
-  
-    currentQuestion.choices.forEach((choice, index) => {
-      const choiceElement = document.createElement("li");
-      choiceElement.innerText = choice;
-      choiceElement.addEventListener("click", () => {
-        checkAnswer(index);
-      });
-      choicesElement.appendChild(choiceElement);
-    });
-  
-    if (currentQuestionIndex === questions.length - 1) {
-      nextButton.innerText = "Finish";
-    }
-  
-    resetTimer();
-    startTimer();
+
+  resetTimer();
+  startTimer();
+  updateProgress(); // Call the updateProgress function
+}
+
+function checkAnswer(index) {
+  const currentQuestion = questions[currentQuestionIndex];
+
+  if (index === currentQuestion.correctAnswerIndex) {
+    score++;
   }
-  
-  function checkAnswer(index) {
-    const currentQuestion = questions[currentQuestionIndex];
-  
-    if (index === currentQuestion.correctAnswerIndex) {
-      score++;
-    }
-  
-    choicesElement.classList.add("disabled");
-    Array.from(choicesElement.children).forEach((choice) => {
-      choice.classList.add("disabled");
-    });
-  
-    if (currentQuestionIndex < questions.length - 1) {
-      nextButton.classList.remove("hide");
-    } else {
-      nextButton.innerText = "Finish";
-    }
-  
-    clearInterval(timer); // Stop the timer when an answer is selected
+
+  choicesElement.classList.add("disabled");
+  Array.from(choicesElement.children).forEach((choice) => {
+    choice.classList.add("disabled");
+  });
+
+  if (currentQuestionIndex < questions.length - 1) {
+    nextButton.classList.remove("hide");
+  } else {
+    nextButton.innerText = "Finish";
   }
-  
-  function showResults() {
-    questionContainer.classList.add("hide");
-    resultContainer.classList.remove("hide");
-    const scoreElement = document.getElementById("score");
-    scoreElement.innerText = `You scored ${score} out of ${questions.length}!`;
-  }
-  
-  function startTimer() {
-    let timeLeft = 45;
+
+  clearInterval(timer);
+  updateProgress(); // Call the updateProgress function
+}
+
+function showResults() {
+  questionContainer.classList.add("hide");
+  resultContainer.classList.remove("hide");
+  const scoreElement = document.getElementById("score");
+  scoreElement.innerText = `You scored ${score} out of ${questions.length}!`;
+}
+
+function startTimer() {
+  let timeLeft = 45;
+  timerElement.innerText = timeLeft;
+
+  timer = setInterval(() => {
+    timeLeft--;
     timerElement.innerText = timeLeft;
-  
-    timer = setInterval(() => {
-      timeLeft--;
-      timerElement.innerText = timeLeft;
-  
-      if (timeLeft === 0) {
-        clearInterval(timer);
-        currentQuestionIndex++;
-        resetTimer();
-        showQuestion();
-      }
-    }, 1000);
-  }
-  
-  function resetTimer() {
-    clearInterval(timer);
-    timerElement.innerText = "";
-  }
+
+    if (timeLeft === 0) {
+      clearInterval(timer);
+      currentQuestionIndex++;
+      resetTimer();
+      showQuestion();
+    }
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(timer);
+  timerElement.innerText = "";
+}
+
+function updateProgress() {
+  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  progressElement.style.width = `${progress}%`;
+}
