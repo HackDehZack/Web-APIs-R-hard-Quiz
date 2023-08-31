@@ -1,62 +1,112 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+}
+
+h1 {
+  margin: 0;
+}
+
+main {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#question-container,
+#result-container {
+  margin-bottom: 20px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+button.hide {
+  display: none;
+}
+
+#timer {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+#score {
+  font-weight: bold;
+}
+
+#progress {
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-align: center;
+  background-color: #00ff0d;
+  color: #f70000;
+  height: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+#progress::after {
+  content: "";
+  display: block;
+  background-color: #bbff00;
+  height: 100%;
+  width: 0;
+  transition: width 0.3s ease-in-out;
+}
+
+#choices li {
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #eee;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#choices li:hover {
+  background-color: #ccc;
+}
+
+#choices.correct {
+  animation: highlightFadeOut 2s ease-in-out forwards;
+}
+
+#choices.incorrect {
+  animation: highlightFadeOut 2s ease-in-out forwards;
+}
+
+#choices .incorrect-choice {
+  background-color: #ffbbbb;
+}
+
+@keyframes highlightFadeOut {
+  0% {
+    background-color: #b1ffb1;
   }
-  
-  header {
-    background-color: #333;
-    color: #fff;
-    padding: 20px;
+  100% {
+    background-color: transparent;
   }
-  
-  h1 {
-    margin: 0;
-  }
-  
-  main {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  #question-container,
-  #result-container {
-    margin-bottom: 20px;
-  }
-  
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button.hide {
-    display: none;
-  }
-  
-  button.disabled {
-    background-color: #999;
-    cursor: not-allowed;
-  }
-  
-  #timer {
-    text-align: right;
-    margin-bottom: 10px;
-  }
-  
-  #score {
-    font-weight: bold;
-  }
-  
+}

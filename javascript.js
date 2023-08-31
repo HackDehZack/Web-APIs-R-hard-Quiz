@@ -39,61 +39,49 @@ const questions = [
       choices: ["<script>", "<link>", "<style>", "<head>"],
       correctAnswerIndex: 0
     }
-  ];
-
-  const startButton = document.getElementById("start-btn");
+];
+const startButton = document.getElementById("start-btn");
 const questionContainer = document.getElementById("question-container");
 const questionElement = document.getElementById("question");
 const choicesElement = document.getElementById("choices");
 const nextButton = document.getElementById("next-btn");
 const resultContainer = document.getElementById("result-container");
 const timerElement = document.getElementById("timer");
-const progressElement = document.getElementById("progress"); // Add the progress element here
+const progressElement = document.getElementById("progress");
+const initialsInput = document.getElementById("initials-input");
+const saveButton = document.getElementById("save-btn");
 
 let currentQuestionIndex = 0;
 let score = 0;
+let time = 60;
 let timer;
 
 startButton.addEventListener("click", startQuiz);
-nextButton.addEventListener("click", () => {
-  currentQuestionIndex++;
-  resetTimer();
-  showQuestion();
-});
+nextButton.addEventListener("click", showNextQuestion);
+saveButton.addEventListener("click", saveScore);
 
 function startQuiz() {
   startButton.classList.add("hide");
   questionContainer.classList.remove("hide");
-  showQuestion();
+  timerElement.innerText = time;
   startTimer();
+  showQuestion();
 }
 
 function showQuestion() {
-  if (currentQuestionIndex >= questions.length) {
-    showResults();
-    return;
-  }
-
   const currentQuestion = questions[currentQuestionIndex];
-  questionElement.innerText = currentQuestion.question;
+  questionElement.textContent = currentQuestion.question;
   choicesElement.innerHTML = "";
 
   currentQuestion.choices.forEach((choice, index) => {
-    const choiceElement = document.createElement("li");
-    choiceElement.innerText = choice;
+    const choiceElement = document.createElement("button");
+    choiceElement.textContent = choice;
+    choiceElement.classList.add("choice");
     choiceElement.addEventListener("click", () => {
       checkAnswer(index);
     });
     choicesElement.appendChild(choiceElement);
   });
-
-  if (currentQuestionIndex === questions.length - 1) {
-    nextButton.innerText = "Finish";
-  }
-
-  resetTimer();
-  startTimer();
-  updateProgress(); // Call the updateProgress function
 }
 
 function checkAnswer(index) {
@@ -101,53 +89,42 @@ function checkAnswer(index) {
 
   if (index === currentQuestion.correctAnswerIndex) {
     score++;
-  }
-
-  choicesElement.classList.add("disabled");
-  Array.from(choicesElement.children).forEach((choice) => {
-    choice.classList.add("disabled");
-  });
-
-  if (currentQuestionIndex < questions.length - 1) {
-    nextButton.classList.remove("hide");
   } else {
-    nextButton.innerText = "Finish";
+    time -= 10; // Subtract 10 seconds for incorrect answer
+    if (time < 0) {
+      time = 0; // Ensure the timer doesn't go below zero
+    }
   }
 
-  clearInterval(timer);
-  updateProgress(); // Call the updateProgress function
+  currentQuestionIndex++;
+  showNextQuestion();
 }
 
-function showResults() {
-  questionContainer.classList.add("hide");
-  resultContainer.classList.remove("hide");
-  const scoreElement = document.getElementById("score");
-  scoreElement.innerText = `You scored ${score} out of ${questions.length}!`;
+function showNextQuestion() {
+  if (currentQuestionIndex < questions.length) {
+    showQuestion();
+  } else {
+    // Quiz finished, show the result
+    clearInterval(timer);
+    questionContainer.classList.add("hide");
+    resultContainer.classList.remove("hide");
+    const scoreElement = document.getElementById("score");
+    scoreElement.textContent = `Your score: ${score}/${questions.length}`;
+  }
 }
 
 function startTimer() {
-  let timeLeft = 45;
-  timerElement.innerText = timeLeft;
-
   timer = setInterval(() => {
-    timeLeft--;
-    timerElement.innerText = timeLeft;
-
-    if (timeLeft === 0) {
+    time--;
+    if (time <= 0) {
       clearInterval(timer);
-      currentQuestionIndex++;
-      resetTimer();
-      showQuestion();
+      showNextQuestion();
     }
+    timerElement.innerText = time;
   }, 1000);
 }
 
-function resetTimer() {
-  clearInterval(timer);
-  timerElement.innerText = "";
-}
-
-function updateProgress() {
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-  progressElement.style.width = `${progress}%`;
+function saveScore() {
+  const initials = initialsInput.value.trim();
+  // Save the initials and score as desired
 }
