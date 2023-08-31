@@ -14,21 +14,21 @@
   </header>
 
   <main>
-    <div id="question-container" class="hide">
-      <h2 id="question"></h2>
-      <h2 id="result"></h2>
+    <section id="question-container" class="hide">
+      <h2 class="question-heading" id="question"></h2>
       <ul id="choices"></ul>
-      <div id="timer"></div>
-      <div id="progress"></div>
-    </div>
-    <div id="result-container" class="hide">
-      <h2 id="quiz-result"></h2>
-      <p id="score"></p>
+      <div class="correctness" id="correctness"></div>
+      <div class="timer" id="timer"></div>
+      <div class="progress" id="progress"></div>
+    </section>
+    <section id="result-container" class="hide">
+      <h2 class="quiz-result-heading" id="quiz-result"></h2>
+      <p class="score" id="score"></p>
       <input type="text" id="initials-input" placeholder="Enter your initials">
-      <button id="save-btn" class="hide">Save</button>
-    </div>
-    <button id="start-btn">Start Quiz</button>
-    <button id="next-btn" class="hide">Next</button>
+      <button class="save-btn hide" id="save-btn">Save</button>
+    </section>
+    <button class="start-btn" id="start-btn">Start Quiz</button>
+    <button class="next-btn hide" id="next-btn">Next</button>
   </main>
 
   <footer>
