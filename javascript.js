@@ -56,150 +56,299 @@ const questions = [
   },
 ];
 
+// Variables to keep track of quiz state
+let currentQuestionIndex = 0;
+let timeLeft = 60; // Total time in seconds
+let score = 0;
+
+// DOM elements
 const startButton = document.getElementById("start-btn");
 const questionContainer = document.getElementById("question-container");
-const questionElement = document.getElementById("question");
-const choicesElement = document.getElementById("choices");
-const nextButton = document.getElementById("next-btn");
+const questionText = document.getElementById("question-text");
+const choicesList = document.getElementById("choices-list");
 const resultContainer = document.getElementById("result-container");
-const timerElement = document.getElementById("timer");
-const progressElement = document.getElementById("progress");
+const resultText = document.getElementById("result-text");
+const scoreContainer = document.getElementById("score-container");
+const scoreElement = document.getElementById("score");
 const initialsInput = document.getElementById("initials-input");
 const saveButton = document.getElementById("save-btn");
 
-let currentQuestionIndex = 0;
-let score = 0;
-let timer;
-
+// Event listeners
 startButton.addEventListener("click", startQuiz);
-nextButton.addEventListener("click", () => {
-  showQuestion();
-});
-
+choicesList.addEventListener("click", handleAnswerSelection);
 saveButton.addEventListener("click", saveScore);
 
+// Start the quiz
 function startQuiz() {
+  startTimer();
+  displayQuestion();
   startButton.classList.add("hide");
   questionContainer.classList.remove("hide");
-  showQuestion();
-  startTimer();
 }
 
+// Display a question and choices
+function displayQuestion() {
+  // Clear the result text
+  resultText.textContent = '';
+
+  const currentQuestion = questions[currentQuestionIndex];
+  questionText.textContent = currentQuestion.question;
+  choicesList.innerHTML = "";
+  currentQuestion.choices.forEach((choice) => {
+    const choiceElement = document.createElement("li");
+    choiceElement.textContent = choice;
+    choicesList.appendChild(choiceElement);
+  });
+}
+
+// Handle user answer selection
+function handleAnswerSelection(event) {
+  const selectedChoice = event.target;
+  const selectedAnswerIndex = Array.from(choicesList.children).indexOf(selectedChoice);
+  const currentQuestion = questions[currentQuestionIndex];
+
+  if (selectedAnswerIndex === currentQuestion.correctAnswerIndex) {
+    resultText.textContent = "Correct!";
+    score++;
+  } else {
+    resultText.textContent = "Incorrect!";
+    timeLeft -= 10; // Decrease timer by 10 seconds for an incorrect answer
+  }
+
+  resultContainer.classList.remove("hide");
+  setTimeout(() => {
+    resultContainer.classList.add("hide");
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+      displayQuestion();
+    } else {
+      endQuiz();
+    }
+  }, 1000);
+}
+// Start the timer
 function startTimer() {
-  let timeLeft = 60; // Set the time limit for the quiz (in seconds)
-  timerElement.innerText = timeLeft;
-
-  timer = setInterval(() => {
+  const timerInterval = setInterval(() => {
     timeLeft--;
-    timerElement.innerText = timeLeft;
-
-    if (timeLeft === 0) {
-      clearInterval(timer);
-      showResults();
+    // Update the timer element in the UI
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      endQuiz();
     }
   }, 1000);
 }
 
-function showQuestion() {
-  if (currentQuestionIndex >= questions.length) {
-    showResults();
-    return;
+// End the quiz
+function endQuiz() {
+  // Stop the timer
+  clearInterval(timer);
+
+  // Hide the question container
+  questionContainer.classList.add("hide");
+
+  // Show the score container
+  scoreContainer.classList.remove("hide");
+
+  // Check if the timer reached 0
+  if (timeLeft === 0) {
+    // Display "Time's Up!" message
+    resultText.textContent = "Time's Up!";
+  } else {
+    // Display the final score
+    resultText.textContent = `Your final score is ${score}`;
   }
-
-  const currentQuestion = questions[currentQuestionIndex];
-  questionElement.innerText = currentQuestion.question;
-  choicesElement.innerHTML = "";
-
-  currentQuestion.choices.forEach((choice, index) => {
-    const choiceElement = document.createElement("li");
-    choiceElement.innerText = choice;
-    choiceElement.addEventListener("click", () => {
-      checkAnswer(index);
-    });
-    choicesElement.appendChild(choiceElement);
-  });
-
-  if (currentQuestionIndex === questions.length - 1) {
-    nextButton.innerText = "Finish";
-  }
-
-  resetTimer();
-  startTimer();
-  updateProgress();
-  resetFeedback();
 }
 
-function checkAnswer(index) {
+// Event listeners
+startButton.addEventListener("click", startQuiz);
+choicesList.addEventListener("click", handleAnswerSelection);
+saveButton.addEventListener("click", saveScore);
+
+// Start the quiz
+function startQuiz() {
+  startTimer();
+  displayQuestion();
+  startButton.classList.add("hide");
+  questionContainer.classList.remove("hide");
+}
+
+// Display a question and choices
+function displayQuestion() {
+  // Clear the result text
+  resultText.textContent = '';
+
+  const currentQuestion = questions[currentQuestionIndex];
+  questionText.textContent = currentQuestion.question;
+  choicesList.innerHTML = "";
+  currentQuestion.choices.forEach((choice) => {
+    const choiceElement = document.createElement("li");
+    choiceElement.textContent = choice;
+    choicesList.appendChild(choiceElement);
+  });
+}
+
+// Handle user answer selection
+function handleAnswerSelection(event) {
+  const selectedChoice = event.target;
+  const selectedAnswerIndex = Array.from(choicesList.children).indexOf(selectedChoice);
   const currentQuestion = questions[currentQuestionIndex];
 
-  if (index === currentQuestion.correctAnswerIndex) {
-    score += 1;
-    choicesElement.classList.add("correct");
+  if (selectedAnswerIndex === currentQuestion.correctAnswerIndex) {
+    resultText.textContent = "Correct!";
+    score++;
   } else {
-    choicesElement.classList.add("incorrect");
-    const choiceElements = choicesElement.children;
-    choiceElements[index].classList.add("incorrect-choice");
+    resultText.textContent = "Incorrect!";
+    timeLeft -= 10; // Decrease timer by 10 seconds for an incorrect answer
   }
 
-  choicesElement.classList.add("disabled");
-  Array.from(choicesElement.children).forEach((choice) => {
-    choice.classList.add("disabled");
-  });
-
-  clearInterval(timer);
-  updateProgress();
-
+  resultContainer.classList.remove("hide");
   setTimeout(() => {
-    showQuestion(); 
+    resultContainer.classList.add("hide");
+    currentQuestionIndex++;
+
+    if (currentQuestionIndex < questions.length) {
+      displayQuestion();
+    } else {
+      endQuiz(); // Call the endQuiz() function when all questions have been answered
+    }
   }, 1000);
 }
 
-function resetFeedback() {
-  choicesElement.classList.remove("correct", "incorrect");
-  const choiceElements = choicesElement.children;
-  for (let i = 0; i < choiceElements.length; i++) {
-    choiceElements[i].classList.remove("incorrect-choice", "disabled");
+
+
+
+
+// DOM elements
+const timerElement = document.getElementById("time-left");
+
+// ...
+
+// Start the timer
+function startTimer() {
+  const timerInterval = setInterval(() => {
+    timeLeft--;
+
+    // Update the timer element in the UI
+    timerElement.textContent = timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      endQuiz();
+    }
+  }, 1000);
+}
+var timer; // Global variable to store the timer
+
+
+// Timer logic
+function startTimer() {
+  var timerElement = document.getElementById("timer");
+  timerElement.textContent = timeLeft + "s";
+
+  timer = setInterval(function() {
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      timerElement.textContent = "Time's up!";
+    } else {
+      timeLeft--;
+      timerElement.textContent = timeLeft + "s";
+    }
+  }, 1000);
+}
+
+// Question validation
+function validateAnswer() {
+  var isCorrect = false; 
+
+  if (isCorrect) {
+    // Correct answer logic
+  } else {
+    var penalty = 10; // Time penalty for an incorrect answer in seconds
+    timeLeft -= penalty;
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      var timerElement = document.getElementById("timer");
+      timerElement.textContent = "Time's up!";
+    }
   }
 }
-
-function showResults() {
+// End the quiz
+function endQuiz() {
   questionContainer.classList.add("hide");
-  resultContainer.classList.remove("hide");
-  const scoreElement = document.getElementById("score");
-  scoreElement.innerText = score + "/" + questions.length;
+  scoreContainer.classList.remove("hide");
+  scoreElement.textContent = score;
+
+  displayLeaderboard(); // Display the leaderboard
 }
 
-function resetTimer() {
-  clearInterval(timer);
-}
-
-function updateProgress() {
-  progressElement.innerText = `Question ${currentQuestionIndex + 1}/${questions.length}`;
-  currentQuestionIndex++;
-}
-
+// Save the score and initials to the leaderboard
 function saveScore() {
   const initials = initialsInput.value.trim();
-  if (initials !== "") {
-    // Save the score to local storage
-    const highScores = JSON.parse(localStorage.getItem("highScores")) || [];
-    const newScore = {
-      initials: initials,
-      score: score,
-      totalQuestions: questions.length
-    };
-    highScores.push(newScore);
-    localStorage.setItem("highScores", JSON.stringify(highScores));
-
-    // Display the score
-    const scoreElement = document.getElementById("score");
-    scoreElement.innerText = score + "/" + questions.length;
-
-    // Reset the quiz
-    currentQuestionIndex = 0;
-    score = 0;
-    initialsInput.value = "";
-    resultContainer.classList.add("hide");
-    startButton.classList.remove("hide");
+  if (initials === "") {
+    alert("Please enter your initials.");
+    return;
   }
+
+  // Get existing leaderboard scores from localStorage
+  const leaderboardScores = JSON.parse(localStorage.getItem("leaderboardScores")) || [];
+
+  // Add the new score to the leaderboard
+  leaderboardScores.push({ score, initials });
+
+  // Sort the leaderboard scores in descending order based on score
+  leaderboardScores.sort((a, b) => b.score - a.score);
+
+  // Store the updated leaderboard in localStorage
+  localStorage.setItem("leaderboardScores", JSON.stringify(leaderboardScores));
+
+  // Show the updated leaderboard
+  displayLeaderboard();
+}
+
+// Display the leaderboard
+function displayLeaderboard() {
+  // Get the leaderboard container element
+  const leaderboardContainer = document.getElementById("leaderboard-container");
+
+  // Clear the leaderboard
+  leaderboardContainer.innerHTML = "";
+
+  // Get the leaderboard scores from localStorage
+  const leaderboardScores = JSON.parse(localStorage.getItem("leaderboardScores")) || [];
+
+  // Create a table to display the leaderboard
+  const table = document.createElement("table");
+  table.classList.add("leaderboard-table");
+
+  // Create table headers
+  const tableHeaderRow = document.createElement("tr");
+  const rankHeader = document.createElement("th");
+  rankHeader.textContent = "Rank";
+  const initialsHeader = document.createElement("th");
+  initialsHeader.textContent = "Initials";
+  const scoreHeader = document.createElement("th");
+  scoreHeader.textContent = "Score";
+  tableHeaderRow.appendChild(rankHeader);
+  tableHeaderRow.appendChild(initialsHeader);
+  tableHeaderRow.appendChild(scoreHeader);
+  table.appendChild(tableHeaderRow);
+
+  // Create table rows for each leaderboard score
+  leaderboardScores.forEach((score, index) => {
+    const tableRow = document.createElement("tr");
+    const rankData = document.createElement("td");
+    rankData.textContent = index + 1;
+    const initialsData = document.createElement("td");
+    initialsData.textContent = score.initials;
+    const scoreData = document.createElement("td");
+    scoreData.textContent = score.score;
+    tableRow.appendChild(rankData);
+    tableRow.appendChild(initialsData);
+    tableRow.appendChild(scoreData);
+    table.appendChild(tableRow);
+  });
+
+  // Add the table to the leaderboard container
+  leaderboardContainer.appendChild(table);
 }

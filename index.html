@@ -14,28 +14,41 @@
   </header>
 
   <main>
-    <section id="question-container" class="hide">
-      <h2 class="question-heading" id="question"></h2>
-      <ul id="choices"></ul>
-      <div class="correctness" id="correctness"></div>
-      <div class="timer" id="timer"></div>
-      <div class="progress" id="progress"></div>
-    </section>
-    <section id="result-container" class="hide">
-      <h2 class="quiz-result-heading" id="quiz-result"></h2>
-      <p class="score" id="score"></p>
-      <input type="text" id="initials-input" placeholder="Enter your initials">
-      <button class="save-btn hide" id="save-btn">Save</button>
-    </section>
-    <button class="start-btn" id="start-btn">Start Quiz</button>
-    <button class="next-btn hide" id="next-btn">Next</button>
+    <div id="start-container">
+      <button id="start-btn">Start Quiz</button>
+    </div>
+
+    <div id="question-container" class="hide">
+      <h2 id="question-text"></h2>
+      <ul id="choices-list"></ul>
+    </div>
+
+    <div id="result-container" class="hide">
+      <h2 id="result-text"></h2>
+    </div>
+
+    <div id="score-container" class="hide">
+      <h2>Your Score: <span id="score"></span></h2>
+      <div id="initials-container">
+        <label for="initials-input">Enter your initials:</label>
+        <input type="text" id="initials-input">
+        <button id="save-btn">Save</button>
+      </div>
+    </div>
+
+    <div id="leaderboard-container"></div>
   </main>
+  <h2 id="timer">Timer: <span id="time-left"></span></h2>
+  <div class="wave"></div>
 
   <footer>
     <p>&copy; 2023 Joel (Zack) Koford</p>
   </footer>
 
   <script src="javascript.js"></script>
+
+
+  
 </body>
 
 </html>
